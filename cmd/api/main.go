@@ -25,10 +25,12 @@ type AppStatus struct {
 }
 
 type application struct {
-	config config
-	logger *log.Logger
-	dsn    string
-	DB     *sql.DB
+	config           config
+	logger           *log.Logger
+	dsn              string
+	DB               *sql.DB
+	maxFileSize      int
+	allowedFileTypes []string
 }
 
 func main() {
@@ -43,8 +45,10 @@ func main() {
 	logger := log.New(os.Stdout, "", log.Ldate|log.Ltime)
 
 	app := &application{
-		config: cfg,
-		logger: logger,
+		config:           cfg,
+		logger:           logger,
+		maxFileSize:      256 << 20,
+		allowedFileTypes: []string{"audio/wave", "application/ogg"},
 	}
 
 	db, err := sql.Open("mysql", app.dsn)
@@ -54,6 +58,8 @@ func main() {
 	}
 
 	defer db.Close()
+
+	app.DB = db
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.port),

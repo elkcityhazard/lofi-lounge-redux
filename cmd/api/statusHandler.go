@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func (app *application) statusHandler(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func (app *application) statusHandler(w http.ResponseWriter, r *http.Request) {
 	c := AppStatus{
 		Status:      "Available",
 		Environment: app.config.env,
